@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Log Console</title>
+
+  <!-- Bootstrap 4.6 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --sb-w:260px; --sb-w-collapsed:72px; --bg-grad:linear-gradient(180deg,#0f172a 0%,#111827 60%,#0b1220 100%); --sb-text:#cbd5e1; --sb-text-dim:#94a3b8; --accent:#4f46e5; }
+    html,body{height:100%} body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans KR","Malgun Gothic",sans-serif;background:#0b1020;}
+
+    /* Sidebar */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb-w);background:var(--bg-grad);box-shadow:4px 0 24px rgba(0,0,0,.35);z-index:1030;transform:translateX(0);transition:transform .28s,width .28s;display:flex;flex-direction:column}
+    .brand{height:64px;display:flex;align-items:center;padding:0 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .logo{width:36px;height:36px;border-radius:12px;margin-right:8px;background:radial-gradient(120% 120% at 20% 0%,#6ee7f9 0%,#4f46e5 55%,#1e1b4b 100%);box-shadow:0 6px 18px rgba(79,70,229,.4)}
+    .title{color:#fff;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hamburger{margin-left:auto;border:0;background:transparent;color:#e5e7eb;padding:6px 8px;border-radius:10px}
+    .hamburger:focus{outline:0}
+
+    .menu{flex:1 1 auto;overflow-y:auto;padding:10px 8px 24px}
+    .menu-group{margin:8px 6px 6px}
+    .group-toggle{width:100%;border:0;background:transparent;color:var(--sb-text);padding:10px 12px;display:flex;align-items:center;border-radius:12px;transition:background .2s,color .2s}
+    .group-toggle:hover{background:rgba(255,255,255,.06);color:#fff}
+    .group-toggle .icon{width:18px;height:18px;margin-right:10px;opacity:.9}
+    .group-toggle .text{font-weight:600}
+    .group-toggle .chev{margin-left:auto;transition:transform .18s;opacity:.9}
+    .group-toggle[aria-expanded="true"] .chev{transform:rotate(90deg)}
+    .submenu{position:relative;padding:4px 0 8px}
+    .submenu::before{content:"";position:absolute;left:24px;top:6px;bottom:10px;width:2px;background:rgba(255,255,255,.06);border-radius:2px}
+    .submenu .nav-link{color:var(--sb-text);display:flex;align-items:center;padding:.55rem .85rem .55rem 42px;margin:3px 6px;border-radius:10px;transition:background .2s,color .2s;white-space:nowrap}
+    .submenu .nav-link .icon{width:18px;height:18px;margin-right:10px;opacity:.9}
+    .submenu .nav-link:hover{background:rgba(255,255,255,.06);color:#fff}
+    .submenu .nav-link.active{color:#fff;background:rgba(79,70,229,.18);box-shadow:inset 0 0 0 1px rgba(79,70,229,.35)}
+
+    /* Collapsed */
+    body.sb-collapsed .sidebar{width:var(--sb-w-collapsed)}
+    body.sb-collapsed .title,body.sb-collapsed .group-toggle .text,body.sb-collapsed .submenu{display:none!important}
+    body.sb-collapsed .group-toggle{justify-content:center;padding:10px 0}
+    body.sb-collapsed .group-toggle .icon{margin:0}
+    .content{margin-left:var(--sb-w);min-height:100%;display:flex;flex-direction:column;transition:margin-left .28s}
+    body.sb-collapsed .content{margin-left:var(--sb-w-collapsed)}
+
+    /* Topbar */
+    .topbar{height:64px;display:flex;align-items:center;gap:12px;padding:0 18px;background:rgba(16,24,39,.55);backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.06);color:#e5e7eb}
+    .btn-sb{border:none;background:transparent;color:#e5e7eb;padding:6px 10px;border-radius:10px}
+    .avatar{width:32px;height:32px;border-radius:50%;background:#1f2937}
+
+    .page{padding:24px;color:#e5e7eb}.page h4{color:#f8fafc}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);color:#e5e7eb}
+    .card .card-header{background:transparent;border-bottom:1px solid rgba(255,255,255,.06);font-weight:600;color:#f8fafc}
+    .table thead th,.table td,.table th{border-color:rgba(255,255,255,.08)}
+    .badge-soft{background:rgba(79,70,229,.18);color:#c7d2fe;border:1px solid rgba(79,70,229,.35)}
+
+    /* Pagination center */
+    .pager-wrap{display:flex;justify-content:center}
+    .pagination .page-link{background:transparent;border-color:rgba(255,255,255,.1);color:#cbd5e1}
+    .pagination .page-link:hover{background:rgba(255,255,255,.06);color:#fff}
+    .pagination .page-item.active .page-link{background:rgba(79,70,229,.18);border-color:rgba(79,70,229,.35);color:#fff}
+
+    /* Footer & mobile */
+    .footer{border-top:1px solid rgba(255,255,255,.06);color:#94a3b8;padding:14px 24px;background:rgba(16,24,39,.55)}
+    .overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);z-index:1025;display:none}
+    @media (max-width:991.98px){
+      .content{margin-left:0}
+      .sidebar{transform:translateX(-100%)}
+      body.sb-open .sidebar{transform:translateX(0)}
+      body.sb-open .overlay{display:block}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="title">Log Console</div>
+      <!-- 데스크톱: 사이드바 접기/펼치기 -->
+      <button class="hamburger d-none d-lg-inline-flex" id="btnMenuDesktop" aria-label="Toggle sidebar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+
+    <nav class="menu">
+      <!-- Main App Log -->
+      <div class="menu-group">
+        <button class="group-toggle" data-toggle="collapse" data-target="#menuMain" aria-expanded="true" aria-controls="menuMain">
+          <i data-feather="box" class="icon"></i><span class="text">Main App Log</span><i data-feather="chevron-right" class="chev"></i>
+        </button>
+        <div id="menuMain" class="submenu collapse show">
+          <a class="nav-link active" href="#" data-page-target="main-dashboard"><i data-feather="layout" class="icon"></i><span>대시보드</span></a>
+          <a class="nav-link" href="#" data-page-target="main-search"><i data-feather="search" class="icon"></i><span>로그 검색</span></a>
+        </div>
+      </div>
+
+      <!-- ECU App Log -->
+      <div class="menu-group">
+        <button class="group-toggle collapsed" data-toggle="collapse" data-target="#menuEcu" aria-expanded="false" aria-controls="menuEcu">
+          <i data-feather="cpu" class="icon"></i><span class="text">Ecu App Log</span><i data-feather="chevron-right" class="chev"></i>
+        </button>
+        <div id="menuEcu" class="submenu collapse">
+          <a class="nav-link" href="#" data-page-target="ecu-dashboard"><i data-feather="bar-chart-2" class="icon"></i><span>대시보드</span></a>
+          <a class="nav-link" href="#" data-page-target="ecu-search"><i data-feather="file-text" class="icon"></i><span>로그 검색</span></a>
+        </div>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Content -->
+  <main class="content">
+    <!-- 상단바: 모바일 전용 메뉴 버튼 + 로그아웃 -->
+    <div class="topbar">
+      <button class="btn-sb d-lg-none" id="btnMenuMobile" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="ml-auto d-flex align-items-center">
+        <span class="text-muted mr-3">안녕하세요, Admin</span>
+        <button class="btn btn-sm btn-outline-light mr-2" id="btnLogout">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:-2px;margin-right:4px;">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          로그아웃
+        </button>
+        <div class="avatar"></div>
+      </div>
+    </div>
+
+    <div class="page container-fluid">
+      <!-- Main Dashboard -->
+      <section id="main-dashboard" class="page-view">
+        <h4 class="mb-3">Main App Log · 대시보드</h4>
+        <div class="row">
+          <div class="col-xl-3 col-md-6 mb-4"><div class="card"><div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+              <div><div class="text-muted mb-1">오늘의 트래픽</div><div class="h4 mb-0">128,492</div></div>
+              <span class="badge-soft badge">+4.1%</span>
+            </div>
+            <div class="mt-3 small text-muted">지난주 대비 증가</div>
+          </div></div></div>
+          <div class="col-xl-3 col-md-6 mb-4"><div class="card"><div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+              <div><div class="text-muted mb-1">오류율</div><div class="h4 mb-0">0.81%</div></div>
+              <span class="badge-soft badge">-0.09%</span>
+            </div>
+            <div class="mt-3 small text-muted">전일 대비 하락</div>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- Main Search -->
+      <section id="main-search" class="page-view" style="display:none;">
+        <h4 class="mb-3">Main App Log · 로그 검색</h4>
+
+        <!-- 검색 패널(접기/펼치기) -->
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-light" data-toggle="collapse" data-target="#mainFiltersCollapse" aria-expanded="true">
+              검색 패널 접기/펼치기
+            </button>
+          </div>
+          <div id="mainFiltersCollapse" class="collapse show">
+            <div class="card-body">
+              <form id="formMainFilters">
+                <div class="form-row">
+                  <div class="form-group col-md-3"><label>시작일</label><input type="date" class="form-control" name="dateFrom"></div>
+                  <div class="form-group col-md-3"><label>종료일</label><input type="date" class="form-control" name="dateTo"></div>
+                  <div class="form-group col-md-3"><label>시작시간</label><input type="time" class="form-control" name="timeFrom"></div>
+                  <div class="form-group col-md-3"><label>종료시간</label><input type="time" class="form-control" name="timeTo"></div>
+
+                  <div class="form-group col-md-3"><label>로그 레벨</label>
+                    <select class="form-control" name="level"><option value="">전체</option><option>DEBUG</option><option>INFO</option><option>WARN</option><option>ERROR</option></select></div>
+                  <div class="form-group col-md-3"><label>앱 버전</label><input type="text" class="form-control" name="appVersion"></div>
+                  <div class="form-group col-md-3"><label>OS 버전</label><input type="text" class="form-control" name="osVersion"></div>
+                  <div class="form-group col-md-3"><label>디바이스 모델</label><input type="text" class="form-control" name="deviceModel"></div>
+
+                  <div class="form-group col-md-3"><label>디바이스 ID</label><input type="text" class="form-control" name="deviceId"></div>
+                  <div class="form-group col-md-3"><label>사용자 ID</label><input type="text" class="form-control" name="userId"></div>
+                  <div class="form-group col-md-3"><label>국가</label><input type="text" class="form-control" name="country"></div>
+                  <div class="form-group col-md-3"><label>언어</label><input type="text" class="form-control" name="lang"></div>
+
+                  <div class="form-group col-md-3"><label>네트워크 타입</label>
+                    <select class="form-control" name="net"><option value="">전체</option><option>WIFI</option><option>LTE</option><option>5G</option><option>Offline</option></select></div>
+                  <div class="form-group col-md-3"><label>HTTP 메서드</label>
+                    <select class="form-control" name="method"><option value="">전체</option><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select></div>
+                  <div class="form-group col-md-3"><label>Status Code</label><input type="number" class="form-control" name="status"></div>
+                  <div class="form-group col-md-3"><label>모듈</label><input type="text" class="form-control" name="module"></div>
+
+                  <div class="form-group col-md-3"><label>엔드포인트</label><input type="text" class="form-control" name="endpoint"></div>
+                  <div class="form-group col-md-3"><label>트랜잭션 ID</label><input type="text" class="form-control" name="txId"></div>
+                  <div class="form-group col-md-3"><label>세션 ID</label><input type="text" class="form-control" name="sessionId"></div>
+                  <div class="form-group col-md-3"><label>메시지 키워드</label><input type="text" class="form-control" name="keyword"></div>
+                </div>
+              </form>
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-sm btn-outline-light mr-1" id="btnMainReset">초기화</button>
+                <button class="btn btn-sm btn-primary" id="btnMainSearch">검색</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결과 + 중앙 페이지네이션 -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            결과 그리드
+            <div class="d-flex align-items-center">
+              <div class="mr-2 text-muted small">Rows:</div>
+              <select id="sizeMain" class="custom-select custom-select-sm" style="width:auto;">
+                <option>10</option><option selected>25</option><option>50</option>
+              </select>
+              <button class="btn btn-sm btn-outline-light ml-2" id="btnMainExport">엑셀 Export</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-dark table-hover mb-0" id="tblMain">
+                <thead><tr><th>시간</th><th>레벨</th><th>Status</th><th>사용자</th><th>디바이스ID</th><th>모듈</th><th>엔드포인트</th><th>메시지</th><th class="text-right">지연(ms)</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="px-3 py-2 pager-wrap">
+              <nav><ul class="pagination pagination-sm mb-0" id="pgMain"></ul></nav>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ECU Dashboard -->
+      <section id="ecu-dashboard" class="page-view" style="display:none;">
+        <h4 class="mb-3">Ecu App Log · 대시보드</h4>
+        <div class="row">
+          <div class="col-xl-3 col-md-6 mb-4"><div class="card"><div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+              <div><div class="text-muted mb-1">ECU 요청 수</div><div class="h4 mb-0">42,310</div></div>
+              <span class="badge-soft badge">+1.8%</span>
+            </div>
+            <div class="mt-3 small text-muted">주간 변화</div>
+          </div></div></div>
+        </div>
+      </section>
+
+      <!-- ECU Search -->
+      <section id="ecu-search" class="page-view" style="display:none;">
+        <h4 class="mb-3">Ecu App Log · 로그 검색</h4>
+
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <button class="btn btn-sm btn-outline-light" data-toggle="collapse" data-target="#ecuFiltersCollapse" aria-expanded="true">
+              검색 패널 접기/펼치기
+            </button>
+          </div>
+          <div id="ecuFiltersCollapse" class="collapse show">
+            <div class="card-body">
+              <form id="formEcuFilters">
+                <!-- 동일 필드 20개 -->
+                <div class="form-row">
+                  <div class="form-group col-md-3"><label>시작일</label><input type="date" class="form-control" name="dateFrom"></div>
+                  <div class="form-group col-md-3"><label>종료일</label><input type="date" class="form-control" name="dateTo"></div>
+                  <div class="form-group col-md-3"><label>시작시간</label><input type="time" class="form-control" name="timeFrom"></div>
+                  <div class="form-group col-md-3"><label>종료시간</label><input type="time" class="form-control" name="timeTo"></div>
+
+                  <div class="form-group col-md-3"><label>로그 레벨</label>
+                    <select class="form-control" name="level"><option value="">전체</option><option>DEBUG</option><option>INFO</option><option>WARN</option><option>ERROR</option></select></div>
+                  <div class="form-group col-md-3"><label>앱 버전</label><input type="text" class="form-control" name="appVersion"></div>
+                  <div class="form-group col-md-3"><label>OS 버전</label><input type="text" class="form-control" name="osVersion"></div>
+                  <div class="form-group col-md-3"><label>디바이스 모델</label><input type="text" class="form-control" name="deviceModel"></div>
+
+                  <div class="form-group col-md-3"><label>디바이스 ID</label><input type="text" class="form-control" name="deviceId"></div>
+                  <div class="form-group col-md-3"><label>사용자 ID</label><input type="text" class="form-control" name="userId"></div>
+                  <div class="form-group col-md-3"><label>국가</label><input type="text" class="form-control" name="country"></div>
+                  <div class="form-group col-md-3"><label>언어</label><input type="text" class="form-control" name="lang"></div>
+
+                  <div class="form-group col-md-3"><label>네트워크 타입</label>
+                    <select class="form-control" name="net"><option value="">전체</option><option>WIFI</option><option>LTE</option><option>5G</option><option>Offline</option></select></div>
+                  <div class="form-group col-md-3"><label>HTTP 메서드</label>
+                    <select class="form-control" name="method"><option value="">전체</option><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select></div>
+                  <div class="form-group col-md-3"><label>Status Code</label><input type="number" class="form-control" name="status"></div>
+                  <div class="form-group col-md-3"><label>모듈</label><input type="text" class="form-control" name="module"></div>
+
+                  <div class="form-group col-md-3"><label>엔드포인트</label><input type="text" class="form-control" name="endpoint"></div>
+                  <div class="form-group col-md-3"><label>트랜잭션 ID</label><input type="text" class="form-control" name="txId"></div>
+                  <div class="form-group col-md-3"><label>세션 ID</label><input type="text" class="form-control" name="sessionId"></div>
+                  <div class="form-group col-md-3"><label>메시지 키워드</label><input type="text" class="form-control" name="keyword"></div>
+                </div>
+              </form>
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-sm btn-outline-light mr-1" id="btnEcuReset">초기화</button>
+                <button class="btn btn-sm btn-primary" id="btnEcuSearch">검색</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            결과 그리드
+            <div class="d-flex align-items-center">
+              <div class="mr-2 text-muted small">Rows:</div>
+              <select id="sizeEcu" class="custom-select custom-select-sm" style="width:auto;">
+                <option>10</option><option selected>25</option><option>50</option>
+              </select>
+              <button class="btn btn-sm btn-outline-light ml-2" id="btnEcuExport">엑셀 Export</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-dark table-hover mb-0" id="tblEcu">
+                <thead><tr><th>시간</th><th>레벨</th><th>Status</th><th>사용자</th><th>디바이스ID</th><th>모듈</th><th>엔드포인트</th><th>메시지</th><th class="text-right">지연(ms)</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="px-3 py-2 pager-wrap">
+              <nav><ul class="pagination pagination-sm mb-0" id="pgEcu"></ul></nav>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="footer">© 2025 Log Console · All rights reserved</footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    feather.replace();
+
+    // 메뉴 토글: 데스크톱(접기/펼치기), 모바일(오프캔버스)
+    function isMobile(){ return window.matchMedia('(max-width: 991.98px)').matches; }
+    $('#btnMenuDesktop').on('click', function(){ $('body').toggleClass('sb-collapsed'); });
+    $('#btnMenuMobile').on('click', function(){ $('body').toggleClass('sb-open'); });
+    $('#overlay').on('click', function(){ $('body').removeClass('sb-open'); });
+    $(window).on('resize', function(){ if(!isMobile()) $('body').removeClass('sb-open'); });
+
+    // 로그아웃 (연동 시 교체)
+    $('#btnLogout').on('click', function(e){ e.preventDefault(); alert('로그아웃 처리 예시입니다. 실제 엔드포인트로 연동하세요.'); });
+
+    // 라우팅
+    $('.submenu .nav-link[data-page-target]').on('click', function(e){
+      e.preventDefault();
+      var target = $(this).data('pageTarget');
+      $('.submenu .nav-link').removeClass('active'); $(this).addClass('active');
+      $('.page-view').hide(); $('#'+target).show();
+      if(isMobile()) $('body').removeClass('sb-open');
+    });
+
+    // ---- 데모 데이터/그리드 ----
+    function sampleRows(prefix, count){
+      var levels=['INFO','WARN','ERROR','DEBUG'], endpoints=['/api/v1/login','/api/v1/diag','/api/v1/firmware','/api/v1/upload'], modules=['AUTH','DIAG','FW','UPLOAD'], rows=[];
+      for(var i=0;i<count;i++){
+        rows.push({ time:'2025-09-08 10:'+String(10+(i%50)).padStart(2,'0')+':'+String(i%60).padStart(2,'0'),
+          level:levels[i%levels.length], status:[200,201,400,401,404,500][i%6], user:'user'+(1000+i),
+          device:prefix+'-DEV-'+(100+i), module:modules[i%modules.length], endpoint:endpoints[i%endpoints.length],
+          msg:['OK','Validation failed','Timeout','Unauthorized','File saved','Queue accepted'][i%6], ms:50+(i*7%900) });
+      } return rows;
+    }
+    var dataMain = sampleRows('MAIN', 137), dataEcu = sampleRows('ECU', 96);
+
+    function renderTable($tbody, rows){
+      $tbody.html(rows.map(function(r){
+        return '<tr><td>'+r.time+'</td><td>'+r.level+'</td><td>'+r.status+'</td><td>'+r.user+'</td><td>'+r.device+'</td><td>'+r.module+'</td><td>'+r.endpoint+'</td><td>'+r.msg+'</td><td class="text-right">'+r.ms+'</td></tr>';
+      }).join(''));
+    }
+    function paginate(arr, page, size){ var start=(page-1)*size; return arr.slice(start,start+size); }
+    function buildPager($ul, total, page, size){
+      var pages=Math.max(1, Math.ceil(total/size)), maxBtns=7, start=Math.max(1, page-Math.floor(maxBtns/2)), end=Math.min(pages, start+maxBtns-1);
+      start=Math.max(1, end-maxBtns+1);
+      var html='<li class="page-item'+(page===1?' disabled':'')+'"><a class="page-link" data-pg="'+(page-1)+'" href="#">Prev</a></li>';
+      for(var p=start;p<=end;p++){ html+='<li class="page-item'+(p===page?' active':'')+'"><a class="page-link" data-pg="'+p+'" href="#">'+p+'</a></li>'; }
+      html+='<li class="page-item'+(page===pages?' disabled':'')+'"><a class="page-link" data-pg="'+(page+1)+'" href="#">Next</a></li>';
+      $ul.html(html);
+    }
+    function formToObj($form){ var o={}; $.each($form.serializeArray(), function(_,kv){ if(kv.value) o[kv.name]=kv.value; }); return o; }
+    function filterRows(rows, f){
+      return rows.filter(function(r){
+        if(f.level && r.level!==f.level) return false;
+        if(f.status && String(r.status)!==String(f.status)) return false;
+        if(f.module && !r.module.toLowerCase().includes(f.module.toLowerCase())) return false;
+        if(f.endpoint && !r.endpoint.toLowerCase().includes(f.endpoint.toLowerCase())) return false;
+        if(f.keyword && !r.msg.toLowerCase().includes(f.keyword.toLowerCase())) return false;
+        return true;
+      });
+    }
+
+    // MAIN
+    var mainView=dataMain.slice(), mainPage=1, mainSize=parseInt($('#sizeMain').val(),10);
+    function renderMain(){ renderTable($('#tblMain tbody'), paginate(mainView, mainPage, mainSize)); buildPager($('#pgMain'), mainView.length, mainPage, mainSize); }
+    renderMain();
+    $('#btnMainSearch').on('click', function(){ mainView=filterRows(dataMain, formToObj($('#formMainFilters'))); mainPage=1; renderMain(); });
+    $('#btnMainReset').on('click', function(){ $('#formMainFilters')[0].reset(); mainView=dataMain.slice(); mainPage=1; renderMain(); });
+    $('#sizeMain').on('change', function(){ mainSize=parseInt(this.value,10)||25; mainPage=1; renderMain(); });
+    $('#pgMain').on('click','a.page-link',function(e){ e.preventDefault(); var p=parseInt($(this).data('pg'),10); if(!isNaN(p)){ mainPage=p; renderMain(); } });
+
+    // ECU
+    var ecuView=dataEcu.slice(), ecuPage=1, ecuSize=parseInt($('#sizeEcu').val(),10);
+    function renderEcu(){ renderTable($('#tblEcu tbody'), paginate(ecuView, ecuPage, ecuSize)); buildPager($('#pgEcu'), ecuView.length, ecuPage, ecuSize); }
+    renderEcu();
+    $('#btnEcuSearch').on('click', function(){ ecuView=filterRows(dataEcu, formToObj($('#formEcuFilters'))); ecuPage=1; renderEcu(); });
+    $('#btnEcuReset').on('click', function(){ $('#formEcuFilters')[0].reset(); ecuView=dataEcu.slice(); ecuPage=1; renderEcu(); });
+    $('#sizeEcu').on('change', function(){ ecuSize=parseInt(this.value,10)||25; ecuPage=1; renderEcu(); });
+    $('#pgEcu').on('click','a.page-link',function(e){ e.preventDefault(); var p=parseInt($(this).data('pg'),10); if(!isNaN(p)){ ecuPage=p; renderEcu(); } });
+
+    // CSV (현재 페이지)
+    function exportTableToCSV(filename, $table){
+      var csv=[]; $table.find('tr').each(function(){
+        var row=[]; $(this).find('th,td').each(function(){ var t=$(this).text().replace(/"/g,'""'); if(/("|,|\n)/.test(t)) t='"'+t+'"'; row.push(t); });
+        csv.push(row.join(','));
+      });
+      var blob=new Blob([csv.join('\n')], {type:'text/csv;charset=utf-8;'});
+      var link=document.createElement('a'), url=URL.createObjectURL(blob); link.href=url; link.download=filename; link.style.display='none';
+      document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url);
+    }
+    $('#btnMainExport').on('click', function(){ exportTableToCSV('main_logs_page.csv',$('#tblMain')); });
+    $('#btnEcuExport').on('click',  function(){ exportTableToCSV('ecu_logs_page.csv',$('#tblEcu')); });
+  </script>
+</body>
+</html>
