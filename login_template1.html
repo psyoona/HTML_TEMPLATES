@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Log Console · Sign in</title>
+
+  <!-- Bootstrap 4.6 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-grad: radial-gradient(1200px 600px at 10% -10%, #1b2551 0%, rgba(17,24,39,.0) 60%),
+                  radial-gradient(900px 500px at 110% -20%, #4f46e5 0%, rgba(17,24,39,.0) 55%),
+                  #0b1020;
+      --card-bg: rgba(17, 24, 39, .72);
+      --card-bd: rgba(255,255,255,.08);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #4f46e5;
+      --accent-2: #60a5fa;
+    }
+    html, body { height: 100%; }
+    body{
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background: var(--bg-grad);
+      color: var(--text);
+    }
+
+    .auth-wrap{
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .auth-card{
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-bd);
+      border-radius: 18px;
+      box-shadow: 0 30px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px; margin-bottom:8px;
+    }
+    .brand-dot{
+      width:40px;height:40px;border-radius:14px; flex:0 0 auto;
+      background: radial-gradient(160% 160% at 20% 0%, #6ee7f9 0%, #4f46e5 55%, #1e1b4b 100%);
+      box-shadow: 0 8px 24px rgba(79,70,229,.5);
+    }
+    .brand .title{ font-weight: 800; color:#fff; letter-spacing:.2px; }
+    .subtitle{ color: var(--muted); font-size:.95rem; }
+
+    .form-control{
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      color: #e5e7eb;
+      border-radius: 12px;
+    }
+    .form-control::placeholder{ color: #808aa5; }
+    .form-control:focus{
+      background: rgba(255,255,255,.07);
+      border-color: rgba(96,165,250,.55);
+      box-shadow: 0 0 0 .2rem rgba(79,70,229,.2);
+      color:#fff;
+    }
+    .input-icon{
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color:#9aa3b2; cursor: pointer;
+    }
+
+    .btn-primary{
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+      border: 0; border-radius: 12px; font-weight: 600;
+      box-shadow: 0 10px 24px rgba(79,70,229,.35);
+    }
+    .btn-primary:disabled{ opacity:.8; }
+    .divider{
+      height:1px; background: rgba(255,255,255,.08); margin: 18px 0;
+    }
+    .link-muted{ color: var(--muted); }
+    .link-muted:hover{ color:#cbd5e1; text-decoration: none; }
+
+    .caps-hint{
+      display:none; font-size:.8rem; color:#fca5a5; margin-top:6px;
+    }
+    .footer-note{ color: #7b879c; font-size: .82rem; }
+  </style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="p-4 p-md-5">
+        <div class="brand">
+          <div class="brand-dot"></div>
+          <div>
+            <div class="title h5 mb-0">Log Console</div>
+            <div class="subtitle">계정에 로그인하세요</div>
+          </div>
+        </div>
+
+        <form id="formLogin" novalidate>
+          <div class="form-group mt-3">
+            <label for="loginId">아이디 또는 이메일</label>
+            <input type="text" class="form-control" id="loginId" name="id" placeholder="your.name@company.com" required>
+            <div class="invalid-feedback">아이디(또는 이메일)를 입력해주세요.</div>
+          </div>
+
+          <div class="form-group position-relative">
+            <label for="loginPw">비밀번호</label>
+            <input type="password" class="form-control" id="loginPw" name="password" placeholder="••••••••" required>
+            <span class="input-icon" id="togglePw" title="표시/숨기기" aria-label="비밀번호 표시/숨기기">
+              <i data-feather="eye"></i>
+            </span>
+            <div class="caps-hint" id="capsHint">Caps Lock이 켜져 있습니다.</div>
+            <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="rememberMe">
+              <label class="custom-control-label" for="rememberMe">로그인 유지</label>
+            </div>
+            <a href="#" class="link-muted">비밀번호 찾기</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block mt-4" id="btnLogin">
+            <span class="spinner-border spinner-border-sm mr-2 d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
+            로그인
+          </button>
+
+          <div class="divider"></div>
+
+          <div class="text-center">
+            <span class="link-muted">계정이 없으신가요?</span>
+            <a href="#" class="ml-1">회원가입</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="px-4 pb-4 text-center footer-note">
+        © 2025 Log Console · All rights reserved
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <script>
+    feather.replace();
+
+    // 비밀번호 표시/숨기기
+    $('#togglePw').on('click', function(){
+      const input = $('#loginPw')[0];
+      input.type = input.type === 'password' ? 'text' : 'password';
+      $(this).html(input.type === 'password' ? feather.icons.eye.toSvg() : feather.icons['eye-off'].toSvg());
+    });
+
+    // Caps Lock 감지
+    $('#loginPw').on('keyup keydown', function(e){
+      const caps = e.getModifierState && e.getModifierState('CapsLock');
+      $('#capsHint').toggle(!!caps);
+    });
+
+    // 기본 검증 + 로딩 상태 (데모)
+    $('#formLogin').on('submit', function(e){
+      e.preventDefault();
+      const form = this;
+      // 부트스트랩 기본 검증
+      if (form.checkValidity() === false) {
+        e.stopPropagation();
+        $(form).addClass('was-validated');
+        return;
+      }
+      // 로딩 표시
+      $('#btnLogin').attr('disabled', true);
+      $('#btnSpinner').removeClass('d-none');
+
+      // 실제 연동: AJAX 또는 form.submit()
+      // 예시 딜레이 후 리다이렉트
+      setTimeout(function(){
+        // window.location.href = '/'; // 실제 서비스 라우팅
+        $('#btnLogin').attr('disabled', false);
+        $('#btnSpinner').addClass('d-none');
+        // 데모 알림
+        alert('로그인 요청이 전송되었습니다. 실제 엔드포인트에 연결하세요.');
+      }, 900);
+    });
+  </script>
+</body>
+</html>
