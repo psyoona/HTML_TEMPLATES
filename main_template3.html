@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -100,32 +100,89 @@
             padding: 20px 0;
         }
 
-        .menu-item {
-            padding: 12px 20px;
-            color: rgba(255, 255, 255, 0.9);
+        .menu-category {
+            margin-bottom: 10px;
+        }
+
+        .menu-category-header {
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.95);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             transition: all 0.3s ease;
             cursor: pointer;
             border-left: 3px solid transparent;
+            font-weight: 600;
+            font-size: 15px;
         }
 
-        .menu-item:hover {
+        .menu-category-header:hover {
             background: rgba(255, 255, 255, 0.1);
             border-left-color: #ffffff;
         }
 
-        .menu-item.active {
-            background: rgba(255, 255, 255, 0.2);
+        .menu-category-header.active {
+            background: rgba(255, 255, 255, 0.15);
             border-left-color: #ffffff;
-            font-weight: 600;
+        }
+
+        .menu-category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .menu-icon {
             width: 20px;
             height: 20px;
+        }
+
+        .menu-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .menu-arrow.expanded {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .submenu.expanded {
+            max-height: 200px;
+        }
+
+        .submenu-item {
+            padding: 12px 20px 12px 52px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .submenu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-left-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .submenu-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: #ffffff;
+            color: #ffffff;
+            font-weight: 600;
         }
 
         /* Main Content */
@@ -541,38 +598,45 @@
             <h2>Dashboard</h2>
         </div>
         <nav class="sidebar-menu">
-            <a href="#" class="menu-item active">
-                <span class="menu-icon">📊</span>
-                <span>대시보드</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🔍</span>
-                <span>검색</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📈</span>
-                <span>통계</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">👥</span>
-                <span>사용자 관리</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">⚙️</span>
-                <span>설정</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📁</span>
-                <span>파일 관리</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📝</span>
-                <span>보고서</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🔔</span>
-                <span>알림</span>
-            </a>
+            <div class="menu-category">
+                <div class="menu-category-header" onclick="toggleMenu('mainAppMenu')">
+                    <div class="menu-category-title">
+                        <span class="menu-icon">▶</span>
+                        <span>Main App Log</span>
+                    </div>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="submenu" id="mainAppMenu">
+                    <a href="#" class="submenu-item active">
+                        <span>■</span>
+                        <span>대시보드</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <span>●</span>
+                        <span>로그 검색</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-category">
+                <div class="menu-category-header" onclick="toggleMenu('ecuAppMenu')">
+                    <div class="menu-category-title">
+                        <span class="menu-icon">▶</span>
+                        <span>Ecu App Log</span>
+                    </div>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="submenu" id="ecuAppMenu">
+                    <a href="#" class="submenu-item">
+                        <span>■</span>
+                        <span>대시보드</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <span>●</span>
+                        <span>로그 검색</span>
+                    </a>
+                </div>
+            </div>
         </nav>
     </div>
 
@@ -900,6 +964,23 @@
         // Initialize
         renderTable();
         renderPagination();
+
+        // Toggle submenu
+        function toggleMenu(menuId) {
+            const submenu = document.getElementById(menuId);
+            const arrow = submenu.previousElementSibling.querySelector('.menu-arrow');
+            
+            submenu.classList.toggle('expanded');
+            arrow.classList.toggle('expanded');
+        }
+
+        // Auto-expand first menu on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstMenu = document.getElementById('mainAppMenu');
+            const firstArrow = firstMenu.previousElementSibling.querySelector('.menu-arrow');
+            firstMenu.classList.add('expanded');
+            firstArrow.classList.add('expanded');
+        });
 
         // Handle responsive sidebar on resize
         window.addEventListener('resize', () => {

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dark Dashboard - Template 4</title>
+    <!-- Font Awesome 6.5.1 (LTS) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -105,6 +107,7 @@
             justify-content: center;
             font-size: 24px;
             box-shadow: 0 4px 15px rgba(52, 211, 153, 0.3);
+            color: #ffffff;
         }
 
         .sidebar-header h2 {
@@ -118,30 +121,40 @@
             padding: 15px 0;
         }
 
-        .menu-item {
+        .menu-category {
+            margin-bottom: 10px;
+        }
+
+        .menu-category-header {
             padding: 14px 20px;
-            color: #94a3b8;
+            color: #cbd5e1;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: space-between;
             transition: all 0.3s ease;
             cursor: pointer;
             border-left: 3px solid transparent;
+            font-weight: 600;
             font-size: 15px;
         }
 
-        .menu-item:hover {
+        .menu-category-header:hover {
             background: rgba(52, 211, 153, 0.1);
             color: #34d399;
             border-left-color: #34d399;
         }
 
-        .menu-item.active {
+        .menu-category-header.active {
             background: rgba(52, 211, 153, 0.15);
             color: #34d399;
             border-left-color: #34d399;
-            font-weight: 600;
+        }
+
+        .menu-category-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
 
         .menu-icon {
@@ -150,7 +163,59 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
+        }
+
+        .menu-arrow {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .menu-arrow.expanded {
+            transform: rotate(180deg);
+            color: #34d399;
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .submenu.expanded {
+            max-height: 200px;
+        }
+
+        .submenu-item {
+            padding: 12px 20px 12px 56px;
+            color: #94a3b8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            font-size: 14px;
+        }
+
+        .submenu-item:hover {
+            background: rgba(52, 211, 153, 0.1);
+            color: #34d399;
+            border-left-color: rgba(52, 211, 153, 0.5);
+        }
+
+        .submenu-item.active {
+            background: rgba(52, 211, 153, 0.15);
+            border-left-color: #34d399;
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .submenu-item i {
+            width: 16px;
         }
 
         /* Main Content */
@@ -196,25 +261,13 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            color: #34d399;
+            font-size: 18px;
         }
 
         .hamburger-btn:hover {
             background: rgba(52, 211, 153, 0.25);
             border-color: #34d399;
-        }
-
-        .hamburger-icon {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .hamburger-icon span {
-            width: 20px;
-            height: 2px;
-            background: #34d399;
-            border-radius: 2px;
-            transition: all 0.3s ease;
         }
 
         .header-title {
@@ -347,6 +400,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+
+        .btn i {
+            font-size: 16px;
         }
 
         .btn-primary {
@@ -619,42 +676,51 @@
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo">📊</div>
+            <div class="sidebar-logo">
+                <i class="fas fa-chart-line"></i>
+            </div>
             <h2>Dashboard</h2>
         </div>
         <nav class="sidebar-menu">
-            <a href="#" class="menu-item active">
-                <span class="menu-icon">🏠</span>
-                <span>대시보드</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🔍</span>
-                <span>검색</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📊</span>
-                <span>통계</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">👥</span>
-                <span>사용자 관리</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">⚙️</span>
-                <span>설정</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📁</span>
-                <span>파일 관리</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">📋</span>
-                <span>보고서</span>
-            </a>
-            <a href="#" class="menu-item">
-                <span class="menu-icon">🔔</span>
-                <span>알림</span>
-            </a>
+            <div class="menu-category">
+                <div class="menu-category-header" onclick="toggleMenu('mainAppMenu')">
+                    <div class="menu-category-title">
+                        <span class="menu-icon"><i class="fas fa-mobile-alt"></i></span>
+                        <span>Main App Log</span>
+                    </div>
+                    <span class="menu-arrow"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="submenu" id="mainAppMenu">
+                    <a href="#" class="submenu-item active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>대시보드</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-search"></i>
+                        <span>로그 검색</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="menu-category">
+                <div class="menu-category-header" onclick="toggleMenu('ecuAppMenu')">
+                    <div class="menu-category-title">
+                        <span class="menu-icon"><i class="fas fa-car"></i></span>
+                        <span>Ecu App Log</span>
+                    </div>
+                    <span class="menu-arrow"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="submenu" id="ecuAppMenu">
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>대시보드</span>
+                    </a>
+                    <a href="#" class="submenu-item">
+                        <i class="fas fa-search"></i>
+                        <span>로그 검색</span>
+                    </a>
+                </div>
+            </div>
         </nav>
     </div>
 
@@ -664,11 +730,7 @@
         <div class="header">
             <div class="header-left">
                 <button class="hamburger-btn" onclick="toggleSidebar()">
-                    <div class="hamburger-icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+                    <i class="fas fa-bars"></i>
                 </button>
                 <h1 class="header-title">메인 대시보드</h1>
             </div>
@@ -754,10 +816,10 @@
             </div>
             <div class="search-actions">
                 <button class="btn btn-secondary" onclick="resetFilters()">
-                    🔄 초기화
+                    <i class="fas fa-redo"></i> 초기화
                 </button>
                 <button class="btn btn-primary" onclick="searchData()">
-                    🔍 검색
+                    <i class="fas fa-search"></i> 검색
                 </button>
             </div>
         </div>
@@ -776,7 +838,7 @@
                         </select>
                     </div>
                     <button class="btn-excel" onclick="exportToExcel()">
-                        📊 Excel 다운로드
+                        <i class="fas fa-file-excel"></i> Excel 다운로드
                     </button>
                 </div>
             </div>
@@ -878,7 +940,7 @@
             let paginationHTML = '';
 
             // Previous button
-            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}><i class="fas fa-chevron-left"></i></button>`;
 
             // Page numbers
             let startPage = Math.max(1, currentPage - 2);
@@ -903,7 +965,7 @@
             }
 
             // Next button
-            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}><i class="fas fa-chevron-right"></i></button>`;
 
             pagination.innerHTML = paginationHTML;
         }
@@ -982,6 +1044,25 @@
         // Initialize
         renderTable();
         renderPagination();
+
+        // Toggle submenu
+        function toggleMenu(menuId) {
+            const submenu = document.getElementById(menuId);
+            const header = submenu.previousElementSibling;
+            const arrow = header.querySelector('.menu-arrow');
+            
+            submenu.classList.toggle('expanded');
+            arrow.classList.toggle('expanded');
+        }
+
+        // Auto-expand first menu on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstMenu = document.getElementById('mainAppMenu');
+            const firstHeader = firstMenu.previousElementSibling;
+            const firstArrow = firstHeader.querySelector('.menu-arrow');
+            firstMenu.classList.add('expanded');
+            firstArrow.classList.add('expanded');
+        });
 
         // Handle responsive sidebar on resize
         window.addEventListener('resize', () => {
