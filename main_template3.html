@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Dashboard - Template 3</title>
+    <!-- Font Awesome 6.5.1 (LTS) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -137,6 +139,10 @@
         .menu-icon {
             width: 20px;
             height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
         .menu-arrow {
@@ -170,6 +176,11 @@
             cursor: pointer;
             border-left: 3px solid transparent;
             font-size: 14px;
+        }
+
+        .submenu-item i {
+            width: 16px;
+            font-size: 12px;
         }
 
         .submenu-item:hover {
@@ -222,24 +233,12 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            color: #ffffff;
+            font-size: 18px;
         }
 
         .hamburger-btn:hover {
             background: rgba(255, 255, 255, 0.3);
-        }
-
-        .hamburger-icon {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .hamburger-icon span {
-            width: 20px;
-            height: 2px;
-            background: #ffffff;
-            border-radius: 2px;
-            transition: all 0.3s ease;
         }
 
         .header-title {
@@ -284,6 +283,13 @@
             font-weight: 700;
             margin-bottom: 20px;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-title i {
+            font-size: 20px;
         }
 
         .search-filters {
@@ -352,6 +358,10 @@
             gap: 8px;
         }
 
+        .btn i {
+            font-size: 16px;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
             color: #667eea;
@@ -397,6 +407,13 @@
             font-size: 18px;
             font-weight: 700;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .results-title i {
+            font-size: 20px;
         }
 
         .results-actions {
@@ -601,18 +618,18 @@
             <div class="menu-category">
                 <div class="menu-category-header" onclick="toggleMenu('mainAppMenu')">
                     <div class="menu-category-title">
-                        <span class="menu-icon">▶</span>
+                        <span class="menu-icon"><i class="fas fa-mobile-alt"></i></span>
                         <span>Main App Log</span>
                     </div>
-                    <span class="menu-arrow">▼</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="submenu" id="mainAppMenu">
                     <a href="#" class="submenu-item active">
-                        <span>■</span>
+                        <i class="fas fa-tachometer-alt"></i>
                         <span>대시보드</span>
                     </a>
                     <a href="#" class="submenu-item">
-                        <span>●</span>
+                        <i class="fas fa-search"></i>
                         <span>로그 검색</span>
                     </a>
                 </div>
@@ -621,18 +638,18 @@
             <div class="menu-category">
                 <div class="menu-category-header" onclick="toggleMenu('ecuAppMenu')">
                     <div class="menu-category-title">
-                        <span class="menu-icon">▶</span>
+                        <span class="menu-icon"><i class="fas fa-car"></i></span>
                         <span>Ecu App Log</span>
                     </div>
-                    <span class="menu-arrow">▼</span>
+                    <span class="menu-arrow"><i class="fas fa-chevron-down"></i></span>
                 </div>
                 <div class="submenu" id="ecuAppMenu">
                     <a href="#" class="submenu-item">
-                        <span>■</span>
+                        <i class="fas fa-tachometer-alt"></i>
                         <span>대시보드</span>
                     </a>
                     <a href="#" class="submenu-item">
-                        <span>●</span>
+                        <i class="fas fa-search"></i>
                         <span>로그 검색</span>
                     </a>
                 </div>
@@ -646,11 +663,7 @@
         <div class="header">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button class="hamburger-btn" onclick="toggleSidebar()">
-                    <div class="hamburger-icon">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+                    <i class="fas fa-bars"></i>
                 </button>
                 <h1 class="header-title">메인 대시보드</h1>
             </div>
@@ -662,7 +675,7 @@
 
         <!-- Search Section -->
         <div class="search-section">
-            <h2 class="search-title">🔍 검색 필터</h2>
+            <h2 class="search-title"><i class="fas fa-search"></i> 검색 필터</h2>
             <div class="search-filters">
                 <div class="filter-group">
                     <label>이름</label>
@@ -736,10 +749,10 @@
             </div>
             <div class="search-actions">
                 <button class="btn btn-secondary" onclick="resetFilters()">
-                    🔄 초기화
+                    <i class="fas fa-redo"></i> 초기화
                 </button>
                 <button class="btn btn-primary" onclick="searchData()">
-                    🔍 검색
+                    <i class="fas fa-search"></i> 검색
                 </button>
             </div>
         </div>
@@ -747,7 +760,7 @@
         <!-- Results Section -->
         <div class="results-section">
             <div class="results-header">
-                <h2 class="results-title">📋 검색 결과 <span id="resultCount">(총 100건)</span></h2>
+                <h2 class="results-title"><i class="fas fa-list"></i> 검색 결과 <span id="resultCount">(총 100건)</span></h2>
                 <div class="results-actions">
                     <div class="page-size-selector">
                         <label>페이지당</label>
@@ -758,7 +771,7 @@
                         </select>
                     </div>
                     <button class="btn-excel" onclick="exportToExcel()">
-                        📊 Excel 다운로드
+                        <i class="fas fa-file-excel"></i> Excel 다운로드
                     </button>
                 </div>
             </div>
