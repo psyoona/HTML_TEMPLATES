@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Dashboard - Template 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background circles */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 8s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        body::before {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: -150px;
+            animation-delay: 0s;
+        }
+
+        body::after {
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            left: -200px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        /* Layout Container */
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-260px);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-header h2 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #ffffff;
+        }
+
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: #ffffff;
+            font-weight: 600;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            transition: margin-left 0.3s ease;
+            padding: 20px;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .hamburger-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .hamburger-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger-icon span {
+            width: 20px;
+            height: 2px;
+            background: #ffffff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .header-title {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-title {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .filter-group select option {
+            background: #667eea;
+            color: #ffffff;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #667eea;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Results Section */
+        .results-section {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-title {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-size-selector label {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .page-size-selector select {
+            padding: 8px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn-excel {
+            background: #10b981;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-excel:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        /* Data Grid */
+        .data-grid {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table thead {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .data-table th {
+            padding: 14px;
+            text-align: left;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 40px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .pagination-btn.active {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #667eea;
+            border-color: #ffffff;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .search-filters {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-260px);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .search-filters {
+                grid-template-columns: 1fr;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-grid {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .search-section,
+            .results-section {
+                padding: 15px;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .pagination-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-width: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Dashboard</h2>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="#" class="menu-item active">
+                <span class="menu-icon">📊</span>
+                <span>대시보드</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🔍</span>
+                <span>검색</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📈</span>
+                <span>통계</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>사용자 관리</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                <span>설정</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📁</span>
+                <span>파일 관리</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">📝</span>
+                <span>보고서</span>
+            </a>
+            <a href="#" class="menu-item">
+                <span class="menu-icon">🔔</span>
+                <span>알림</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <button class="hamburger-btn" onclick="toggleSidebar()">
+                    <div class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <h1 class="header-title">메인 대시보드</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <span>사용자</span>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2 class="search-title">🔍 검색 필터</h2>
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label>이름</label>
+                    <input type="text" placeholder="이름을 입력하세요" id="filter1">
+                </div>
+                <div class="filter-group">
+                    <label>이메일</label>
+                    <input type="email" placeholder="이메일을 입력하세요" id="filter2">
+                </div>
+                <div class="filter-group">
+                    <label>상태</label>
+                    <select id="filter3">
+                        <option value="">전체</option>
+                        <option value="active">활성</option>
+                        <option value="inactive">비활성</option>
+                        <option value="pending">대기</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>부서</label>
+                    <select id="filter4">
+                        <option value="">전체</option>
+                        <option value="dev">개발팀</option>
+                        <option value="design">디자인팀</option>
+                        <option value="marketing">마케팅팀</option>
+                        <option value="sales">영업팀</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>직급</label>
+                    <select id="filter5">
+                        <option value="">전체</option>
+                        <option value="staff">사원</option>
+                        <option value="senior">대리</option>
+                        <option value="manager">과장</option>
+                        <option value="director">부장</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>연령대</label>
+                    <select id="filter6">
+                        <option value="">전체</option>
+                        <option value="20s">20대</option>
+                        <option value="30s">30대</option>
+                        <option value="40s">40대</option>
+                        <option value="50s">50대 이상</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>시작일</label>
+                    <input type="date" id="filter7">
+                </div>
+                <div class="filter-group">
+                    <label>종료일</label>
+                    <input type="date" id="filter8">
+                </div>
+                <div class="filter-group">
+                    <label>지역</label>
+                    <select id="filter9">
+                        <option value="">전체</option>
+                        <option value="seoul">서울</option>
+                        <option value="busan">부산</option>
+                        <option value="incheon">인천</option>
+                        <option value="daegu">대구</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>키워드</label>
+                    <input type="text" placeholder="키워드 입력" id="filter10">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="btn btn-secondary" onclick="resetFilters()">
+                    🔄 초기화
+                </button>
+                <button class="btn btn-primary" onclick="searchData()">
+                    🔍 검색
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section">
+            <div class="results-header">
+                <h2 class="results-title">📋 검색 결과 <span id="resultCount">(총 100건)</span></h2>
+                <div class="results-actions">
+                    <div class="page-size-selector">
+                        <label>페이지당</label>
+                        <select id="pageSize" onchange="changePageSize()">
+                            <option value="10">10개</option>
+                            <option value="30">30개</option>
+                            <option value="50">50개</option>
+                        </select>
+                    </div>
+                    <button class="btn-excel" onclick="exportToExcel()">
+                        📊 Excel 다운로드
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Grid -->
+            <div class="data-grid">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th>부서</th>
+                            <th>직급</th>
+                            <th>상태</th>
+                            <th>등록일</th>
+                            <th>지역</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const sampleData = [];
+        for (let i = 1; i <= 100; i++) {
+            const departments = ['개발팀', '디자인팀', '마케팅팀', '영업팀'];
+            const positions = ['사원', '대리', '과장', '부장'];
+            const statuses = ['활성', '비활성', '대기'];
+            const regions = ['서울', '부산', '인천', '대구'];
+            
+            sampleData.push({
+                id: i,
+                name: `사용자${i}`,
+                email: `user${i}@example.com`,
+                department: departments[Math.floor(Math.random() * departments.length)],
+                position: positions[Math.floor(Math.random() * positions.length)],
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                date: `2025-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+                region: regions[Math.floor(Math.random() * regions.length)]
+            });
+        }
+
+        let currentPage = 1;
+        let pageSize = 10;
+        let filteredData = [...sampleData];
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        }
+
+        // Render data table
+        function renderTable() {
+            const tbody = document.getElementById('dataTableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map(item => `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td>${item.department}</td>
+                    <td>${item.position}</td>
+                    <td>${item.status}</td>
+                    <td>${item.date}</td>
+                    <td>${item.region}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('resultCount').textContent = `(총 ${filteredData.length}건)`;
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+
+            let paginationHTML = '';
+
+            // Previous button
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>◀</button>`;
+
+            // Page numbers
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += `<span style="color: #fff; padding: 0 5px;">...</span>`;
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHTML += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span style="color: #fff; padding: 0 5px;">...</span>`;
+                }
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // Next button
+            paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>`;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        // Change page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        // Change page size
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById('pageSize').value);
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        // Search data
+        function searchData() {
+            const name = document.getElementById('filter1').value.toLowerCase();
+            const email = document.getElementById('filter2').value.toLowerCase();
+            const status = document.getElementById('filter3').value;
+            const department = document.getElementById('filter4').value;
+
+            filteredData = sampleData.filter(item => {
+                return (
+                    (name === '' || item.name.toLowerCase().includes(name)) &&
+                    (email === '' || item.email.toLowerCase().includes(email)) &&
+                    (status === '' || item.status === status) &&
+                    (department === '' || item.department.includes(department))
+                );
+            });
+
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('filter1').value = '';
+            document.getElementById('filter2').value = '';
+            document.getElementById('filter3').value = '';
+            document.getElementById('filter4').value = '';
+            document.getElementById('filter5').value = '';
+            document.getElementById('filter6').value = '';
+            document.getElementById('filter7').value = '';
+            document.getElementById('filter8').value = '';
+            document.getElementById('filter9').value = '';
+            document.getElementById('filter10').value = '';
+
+            filteredData = [...sampleData];
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            let csv = '번호,이름,이메일,부서,직급,상태,등록일,지역\n';
+            filteredData.forEach(item => {
+                csv += `${item.id},${item.name},${item.email},${item.department},${item.position},${item.status},${item.date},${item.region}\n`;
+            });
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `data_export_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Initialize
+        renderTable();
+        renderPagination();
+
+        // Handle responsive sidebar on resize
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
