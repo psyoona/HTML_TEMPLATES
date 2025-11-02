@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-width-collapsed: 80px;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-color-2: #2a2a2a;
+            --primary-color: #bb86fc;
+            --primary-variant-color: #3700b3;
+            --secondary-color: #03dac6;
+            --on-surface-color: #ffffff;
+            --on-surface-variant-color: #b0b0b0;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --surface-color-2: #f1f3f5;
+            --primary-color: #5f3dc4;
+            --primary-variant-color: #4c2db8;
+            --secondary-color: #12b886;
+            --on-surface-color: #212529;
+            --on-surface-variant-color: #868e96;
+            --border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--on-surface-color);
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--surface-color);
+            border-right: 1px solid var(--border-color);
+            transition: transform 0.3s ease, width 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-width-collapsed);
+        }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            height: 70px;
+            gap: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .sidebar-logo {
+            color: var(--primary-color);
+            font-size: 2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+        
+        .sidebar.collapsed .sidebar-header h1 {
+            opacity: 0;
+            display: none;
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            list-style: none;
+            padding-top: 20px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .company-name {
+            color: var(--on-surface-variant-color);
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar.collapsed .company-name {
+            opacity: 0;
+            display: none;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--surface-color-2);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .theme-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-option.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        [data-theme="light"] .theme-option.active {
+            color: #fff;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--on-surface-variant-color);
+            text-decoration: none;
+            gap: 20px;
+            white-space: nowrap;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .menu-item a:hover, .menu-item.active a {
+            background-color: rgba(187, 134, 252, 0.1);
+            color: var(--primary-color);
+            border-right: 3px solid var(--primary-color);
+        }
+        
+        .sidebar.collapsed .menu-item.active a {
+             border-right: none;
+        }
+
+        .menu-icon {
+            font-size: 1.2rem;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .menu-text {
+            opacity: 1;
+            transition: opacity 0.2s;
+        }
+        
+        .sidebar.collapsed .menu-text {
+            opacity: 0;
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .main-content.expanded {
+            margin-left: var(--sidebar-width-collapsed);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .hamburger-btn:hover {
+            background-color: var(--surface-color-2);
+        }
+
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        /* Board Styles */
+        .board-section {
+            background-color: var(--surface-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .board-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .board-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-variant-color);
+        }
+
+        .board-list {
+            list-style: none;
+        }
+
+        .board-list-item {
+            padding: 20px 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        .board-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .board-list-item:hover {
+            background-color: var(--surface-color-2);
+        }
+
+        .item-title {
+            font-size: 0.95rem;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+        
+        .item-title .fa-paperclip {
+            margin-left: 10px;
+            color: var(--on-surface-variant-color);
+        }
+
+        .item-meta {
+            font-size: 0.8rem;
+            color: var(--on-surface-variant-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Q&A Specific */
+        .qna-item {
+            padding: 20px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .qna-item:last-child {
+            border-bottom: none;
+        }
+        
+        .question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .answer {
+            background-color: var(--surface-color-2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 3px solid var(--secondary-color);
+        }
+        
+        .answer p {
+            line-height: 1.6;
+        }
+        
+        .status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .status.answered {
+            background-color: var(--secondary-color);
+            color: #000;
+        }
+        
+        .status.pending {
+            background-color: var(--on-surface-variant-color);
+            color: var(--bg-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .detail-content {
+            line-height: 1.8;
+            color: var(--on-surface-color);
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--surface-color-2);
+            border-radius: 8px;
+        }
+
+        .detail-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--on-surface-variant-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: var(--on-surface-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--surface-color-2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--on-surface-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--surface-color-2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .file-upload-btn:hover {
+            background-color: rgba(187, 134, 252, 0.1);
+        }
+
+        .file-name {
+            margin-left: 15px;
+            color: var(--on-surface-variant-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-cancel {
+            background-color: var(--surface-color-2);
+            color: var(--on-surface-color);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--border-color);
+        }
+
+        /* File attachment link */
+        .file-link {
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .file-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hidden section */
+        .hidden {
+            display: none;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            background-color: var(--surface-color-2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--on-surface-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 38px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background-color: rgba(187, 134, 252, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .dashboard-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant-color);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--on-surface-variant-color);
+        }
+
+        /* QNA List View */
+        .qna-list-item {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .qna-list-item:hover {
+            background-color: var(--surface-color-2);
+        }
+
+        .qna-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .board-list-item {
+            cursor: pointer;
+        }
+
+        .qna-detail-section {
+            margin-top: 20px;
+        }
+
+        .qna-detail-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .answer-section {
+            background-color: var(--surface-color-2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .answer-section h4 {
+            color: var(--secondary-color);
+        }
+
+        .answer-input-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .answer-input-section h4 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                padding: 15px;
+            }
+            
+            .board-section {
+                padding: 20px;
+            }
+
+            .dashboard-cards {
+                gap: 15px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Mobile sidebar - hidden by default */
+            .sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+                box-shadow: none;
+            }
+            
+            /* Show sidebar when opened */
+            .sidebar.mobile-open {
+                transform: translateX(0);
+                box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+            }
+
+            /* Reset collapsed state on mobile */
+            .sidebar.collapsed {
+                width: var(--sidebar-width);
+                transform: translateX(-100%);
+            }
+
+            .sidebar.collapsed.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 15px 12px;
+                width: 100%;
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+
+            .header-title {
+                font-size: 1.3rem;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .board-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .board-header .btn {
+                width: 100%;
+            }
+
+            .item-meta {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                max-width: none;
+                padding: 20px 15px;
+                margin: 10px;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .theme-toggle {
+                order: 3;
+            }
+
+            .pagination {
+                gap: 5px;
+            }
+
+            .card-icon {
+                font-size: 2rem;
+            }
+
+            .card-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 12px 8px;
+            }
+
+            .board-section {
+                padding: 15px 12px;
+                border-radius: 10px;
+            }
+
+            .header-title {
+                font-size: 1.1rem;
+            }
+
+            .card-value {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.85rem;
+            }
+
+            .card-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .pagination-btn {
+                padding: 6px 10px;
+                min-width: 30px;
+                font-size: 0.75rem;
+            }
+
+            .board-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .item-title {
+                font-size: 0.9rem;
+            }
+
+            .item-meta {
+                font-size: 0.75rem;
+            }
+
+            .modal-header h3 {
+                font-size: 1.1rem;
+            }
+
+            .form-group textarea {
+                min-height: 100px;
+            }
+
+            .theme-option span {
+                display: none;
+            }
+
+            .theme-toggle {
+                padding: 3px;
+                gap: 3px;
+            }
+
+            .theme-option {
+                padding: 5px 8px;
+            }
+
+            .hamburger-btn {
+                font-size: 1.3rem;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .main-content {
+                padding: 10px 5px;
+            }
+
+            .dashboard-cards {
+                gap: 10px;
+            }
+
+            .board-section {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fab fa-buffer"></i>
+                </div>
+                <h1>Dashboard</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active"><a href="#" data-section="dashboard"><i class="fas fa-chart-line menu-icon"></i><span class="menu-text">대시보드</span></a></li>
+                <li class="menu-item"><a href="#" data-section="notice"><i class="fas fa-bullhorn menu-icon"></i><span class="menu-text">공지사항</span></a></li>
+                <li class="menu-item"><a href="#" data-section="qna"><i class="fas fa-question-circle menu-icon"></i><span class="menu-text">Q&A</span></a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="company-name">© 2025 YourCompany</div>
+            </div>
+        </aside>
+
+        <main class="main-content" id="main-content">
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+                    <h1 class="header-title" id="page-title">대시보드</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="theme-toggle">
+                        <div class="theme-option active" data-theme="dark">
+                            <i class="fas fa-moon"></i>
+                            <span>Dark</span>
+                        </div>
+                        <div class="theme-option" data-theme="light">
+                            <i class="fas fa-sun"></i>
+                            <span>Light</span>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <span class="user-name">Admin User</span>
+                        <div class="user-avatar">A</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section">
+                <div class="dashboard-cards">
+                    <div class="dashboard-card">
+                        <div class="card-icon" style="color: var(--primary-color);">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="card-title">전체 질문</div>
+                        <div class="card-value" id="total-questions">48</div>
+                        <div class="card-subtitle">누적 질문 수</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon" style="color: var(--secondary-color);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-title">답변 완료</div>
+                        <div class="card-value" id="answered-questions">35</div>
+                        <div class="card-subtitle">답변 완료된 질문</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon" style="color: #ff6b6b;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-title">답변 대기</div>
+                        <div class="card-value" id="pending-questions">13</div>
+                        <div class="card-subtitle">답변 대기 중인 질문</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-icon" style="color: #ffd93d;">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="card-title">답변률</div>
+                        <div class="card-value" id="answer-rate">73%</div>
+                        <div class="card-subtitle">전체 질문 대비</div>
+                    </div>
+                </div>
+
+                <div class="board-section">
+                    <div class="board-header">
+                        <h2>최근 Q&A 현황</h2>
+                    </div>
+                    <ul class="board-list">
+                        <li class="qna-list-item" onclick="openQnaDetail(1)">
+                            <span class="item-title">비밀번호 변경은 어떻게 하나요?</span>
+                            <div class="item-meta">
+                                <span class="status answered">답변완료</span>
+                                <span>2025-11-01</span>
+                            </div>
+                        </li>
+                        <li class="qna-list-item" onclick="openQnaDetail(2)">
+                            <span class="item-title">첨부파일 용량 제한이 있나요?</span>
+                            <div class="item-meta">
+                                <span class="status pending">답변대기</span>
+                                <span>2025-11-02</span>
+                            </div>
+                        </li>
+                        <li class="qna-list-item" onclick="openQnaDetail(3)">
+                            <span class="item-title">회원 탈퇴는 어디서 하나요?</span>
+                            <div class="item-meta">
+                                <span class="status pending">답변대기</span>
+                                <span>2025-11-02</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Notice Section -->
+            <section class="board-section hidden" id="notice-section">
+                <div class="board-header">
+                    <h2>공지사항</h2>
+                    <button class="btn btn-primary" id="notice-write-btn"><i class="fas fa-pen"></i> 글쓰기</button>
+                </div>
+                <ul class="board-list" id="notice-list">
+                    <li class="board-list-item" onclick="openNoticeDetail(1)">
+                        <span class="item-title">서버 점검 안내 (11/05 02:00 ~ 04:00)</span>
+                        <div class="item-meta">
+                            <span><i class="fas fa-paperclip"></i></span>
+                            <span>관리자</span>
+                            <span>2025-11-02</span>
+                            <span>조회 128</span>
+                        </div>
+                    </li>
+                    <li class="board-list-item" onclick="openNoticeDetail(2)">
+                        <span class="item-title">개인정보처리방침 개정 안내</span>
+                        <div class="item-meta">
+                            <span>관리자</span>
+                            <span>2025-10-28</span>
+                            <span>조회 543</span>
+                        </div>
+                    </li>
+                    <li class="board-list-item" onclick="openNoticeDetail(3)">
+                        <span class="item-title">신규 기능 업데이트 안내</span>
+                        <div class="item-meta">
+                            <span>관리자</span>
+                            <span>2025-10-25</span>
+                            <span>조회 892</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="pagination" id="notice-pagination">
+                    <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Q&A Section -->
+            <section class="board-section hidden" id="qna-section">
+                <div class="board-header">
+                    <h2>Q&A</h2>
+                    <button class="btn btn-primary" id="qna-write-btn"><i class="fas fa-question"></i> 질문하기</button>
+                </div>
+                <ul class="board-list" id="qna-list">
+                    <li class="qna-list-item" onclick="openQnaDetail(1)">
+                        <span class="item-title">비밀번호 변경은 어떻게 하나요?</span>
+                        <div class="item-meta">
+                            <span class="status answered">답변완료</span>
+                            <span><i class="fas fa-paperclip"></i></span>
+                            <span>김민준</span>
+                            <span>접수: 2025-11-01</span>
+                            <span>완료: 2025-11-01</span>
+                        </div>
+                    </li>
+                    <li class="qna-list-item" onclick="openQnaDetail(2)">
+                        <span class="item-title">첨부파일 용량 제한이 있나요?</span>
+                        <div class="item-meta">
+                            <span class="status pending">답변대기</span>
+                            <span>이서연</span>
+                            <span>접수: 2025-11-02</span>
+                        </div>
+                    </li>
+                    <li class="qna-list-item" onclick="openQnaDetail(3)">
+                        <span class="item-title">회원 탈퇴는 어디서 하나요?</span>
+                        <div class="item-meta">
+                            <span class="status pending">답변대기</span>
+                            <span>박지훈</span>
+                            <span>접수: 2025-11-02</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="pagination" id="qna-pagination">
+                    <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notice Detail Modal -->
+    <div class="modal" id="notice-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="notice-detail-title">공지사항 제목</h3>
+                <button class="close-btn" onclick="closeModal('notice-detail-modal')">&times;</button>
+            </div>
+            <div class="detail-info" id="notice-detail-info">
+                <span><i class="fas fa-user"></i> 관리자</span>
+                <span><i class="fas fa-calendar"></i> 2025-11-02</span>
+                <span><i class="fas fa-eye"></i> 조회 128</span>
+            </div>
+            <div class="detail-content" id="notice-detail-content">
+                내용이 표시됩니다.
+            </div>
+            <div id="notice-detail-file"></div>
+        </div>
+    </div>
+
+    <!-- Notice Write Modal -->
+    <div class="modal" id="notice-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>공지사항 작성</h3>
+                <button class="close-btn" onclick="closeModal('notice-modal')">&times;</button>
+            </div>
+            <form id="notice-form">
+                <div class="form-group">
+                    <label for="notice-title">제목</label>
+                    <input type="text" id="notice-title" placeholder="제목을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="notice-content">내용</label>
+                    <textarea id="notice-content" placeholder="내용을 입력하세요" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>첨부파일</label>
+                    <label for="notice-file" class="file-upload-btn">
+                        <i class="fas fa-paperclip"></i> 파일 선택
+                    </label>
+                    <input type="file" id="notice-file">
+                    <span class="file-name" id="notice-file-name"></span>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('notice-modal')">취소</button>
+                    <button type="submit" class="btn btn-primary">등록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Q&A Detail Modal with Answer Input -->
+    <div class="modal" id="qna-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="qna-detail-title">질문 제목</h3>
+                <button class="close-btn" onclick="closeModal('qna-detail-modal')">&times;</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="detail-info" id="qna-detail-info">
+                    <span><i class="fas fa-user"></i> 작성자</span>
+                    <span><i class="fas fa-calendar"></i> 접수일</span>
+                </div>
+                <span class="status" id="qna-detail-status">답변대기</span>
+            </div>
+            <div class="qna-detail-section">
+                <h4><i class="fas fa-question-circle"></i> 질문 내용</h4>
+                <div class="detail-content" id="qna-detail-question">질문 내용이 표시됩니다.</div>
+                <div id="qna-detail-file"></div>
+            </div>
+            <div class="answer-section" id="qna-answer-section" style="display: none;">
+                <h4><i class="fas fa-comment-dots"></i> 관리자 답변</h4>
+                <div id="qna-detail-answer">답변 내용이 표시됩니다.</div>
+                <div style="margin-top: 10px; font-size: 0.85rem; color: var(--on-surface-variant-color);" id="qna-answer-date"></div>
+            </div>
+            
+            <!-- Answer Input Section -->
+            <div class="answer-input-section" id="qna-answer-input" style="display: none;">
+                <h4><i class="fas fa-reply"></i> 답변 작성</h4>
+                <form id="inline-answer-form">
+                    <div class="form-group">
+                        <textarea id="inline-answer-content" placeholder="답변을 입력하세요" required style="min-height: 120px;"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-cancel" onclick="cancelAnswer()">취소</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> 답변 등록</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-actions" id="qna-detail-actions">
+                <button class="btn btn-cancel" onclick="closeModal('qna-detail-modal')">닫기</button>
+                <button class="btn btn-primary" id="answer-btn" onclick="showAnswerInput()"><i class="fas fa-reply"></i> 답변하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q&A Write Modal -->
+    <div class="modal" id="qna-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>질문 작성</h3>
+                <button class="close-btn" onclick="closeModal('qna-modal')">&times;</button>
+            </div>
+            <form id="qna-form">
+                <div class="form-group">
+                    <label for="qna-title">제목</label>
+                    <input type="text" id="qna-title" placeholder="질문 제목을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="qna-content">내용</label>
+                    <textarea id="qna-content" placeholder="질문 내용을 입력하세요" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>첨부파일</label>
+                    <label for="qna-file" class="file-upload-btn">
+                        <i class="fas fa-paperclip"></i> 파일 선택
+                    </label>
+                    <input type="file" id="qna-file">
+                    <span class="file-name" id="qna-file-name"></span>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('qna-modal')">취소</button>
+                    <button type="submit" class="btn btn-primary">질문 등록</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const pageTitle = document.getElementById('page-title');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const noticeSection = document.getElementById('notice-section');
+        const qnaSection = document.getElementById('qna-section');
+
+        let currentQnaId = null;
+
+        console.log('Script loaded successfully');
+
+        // Sample data
+        const noticeData = {
+            1: {
+                title: '서버 점검 안내 (11/05 02:00 ~ 04:00)',
+                author: '관리자',
+                date: '2025-11-02',
+                views: 128,
+                content: '안녕하세요. 시스템 안정화를 위한 정기 서버 점검을 실시합니다.\n\n일시: 2025년 11월 5일 02:00 ~ 04:00 (약 2시간)\n영향: 해당 시간 동안 서비스 이용이 불가능합니다.\n\n이용에 불편을 드려 죄송합니다.',
+                hasFile: true,
+                fileName: '서버점검안내.pdf'
+            },
+            2: {
+                title: '개인정보처리방침 개정 안내',
+                author: '관리자',
+                date: '2025-10-28',
+                views: 543,
+                content: '개인정보처리방침이 일부 개정되었습니다.\n\n개정 시행일: 2025년 11월 1일\n주요 변경사항: 개인정보 보유기간 조정\n\n자세한 내용은 개인정보처리방침을 확인해주세요.',
+                hasFile: false
+            },
+            3: {
+                title: '신규 기능 업데이트 안내',
+                author: '관리자',
+                date: '2025-10-25',
+                views: 892,
+                content: '다음과 같은 신규 기능이 추가되었습니다.\n\n1. 다크모드 지원\n2. 알림 설정 기능\n3. 파일 일괄 다운로드\n\n많은 이용 부탁드립니다.',
+                hasFile: false
+            }
+        };
+
+        const qnaData = {
+            1: {
+                title: '비밀번호 변경은 어떻게 하나요?',
+                author: '김민준',
+                receiveDate: '2025-11-01',
+                completeDate: '2025-11-01',
+                status: 'answered',
+                question: '비밀번호를 변경하고 싶은데 어디서 할 수 있나요? 마이페이지를 찾을 수가 없어서 문의드립니다.',
+                answer: '안녕하세요, 관리자입니다.\n\n비밀번호는 우측 상단 프로필 클릭 > [마이페이지] > [개인정보 수정] 메뉴에서 변경하실 수 있습니다.\n\n감사합니다.',
+                hasFile: true,
+                fileName: '비밀번호_변경_가이드.pdf'
+            },
+            2: {
+                title: '첨부파일 용량 제한이 있나요?',
+                author: '이서연',
+                receiveDate: '2025-11-02',
+                status: 'pending',
+                question: '문서를 업로드하려고 하는데 파일 용량 제한이 있는지 궁금합니다. 최대 몇 MB까지 가능한가요?',
+                hasFile: false
+            },
+            3: {
+                title: '회원 탈퇴는 어디서 하나요?',
+                author: '박지훈',
+                receiveDate: '2025-11-02',
+                status: 'pending',
+                question: '더 이상 서비스를 이용하지 않으려고 하는데 회원 탈퇴 메뉴를 찾을 수가 없습니다.',
+                hasFile: false
+            }
+        };
+
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // Hamburger menu toggle - different behavior for mobile vs desktop
+        hamburgerBtn.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                // Mobile: toggle sidebar visibility
+                sidebar.classList.toggle('mobile-open');
+                sidebarOverlay.classList.toggle('show');
+            } else {
+                // Desktop: collapse/expand sidebar
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
+            }
+        });
+
+        // Close sidebar when clicking overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('show');
+        });
+        
+        // Menu navigation
+        document.querySelectorAll('.menu-item a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = e.currentTarget.getAttribute('data-section');
+                
+                // Update active menu
+                document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+                e.currentTarget.parentElement.classList.add('active');
+                
+                // Show/hide sections
+                dashboardSection.classList.add('hidden');
+                noticeSection.classList.add('hidden');
+                qnaSection.classList.add('hidden');
+
+                if (section === 'dashboard') {
+                    pageTitle.textContent = '대시보드';
+                    dashboardSection.classList.remove('hidden');
+                } else if (section === 'notice') {
+                    pageTitle.textContent = '공지사항';
+                    noticeSection.classList.remove('hidden');
+                } else if (section === 'qna') {
+                    pageTitle.textContent = 'Q&A';
+                    qnaSection.classList.remove('hidden');
+                }
+
+                // Close sidebar on mobile after menu click
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('show');
+                }
+            });
+        });
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Notice detail modal
+        function openNoticeDetail(noticeId) {
+            console.log('openNoticeDetail called with ID:', noticeId);
+            const data = noticeData[noticeId];
+            if (!data) {
+                console.error('No data found for Notice ID:', noticeId);
+                return;
+            }
+
+            const titleEl = document.getElementById('notice-detail-title');
+            const infoEl = document.getElementById('notice-detail-info');
+            const contentEl = document.getElementById('notice-detail-content');
+            const fileEl = document.getElementById('notice-detail-file');
+
+            if (titleEl) titleEl.textContent = data.title;
+            
+            if (infoEl) {
+                infoEl.innerHTML = `
+                    <span><i class="fas fa-user"></i> ${data.author}</span>
+                    <span><i class="fas fa-calendar"></i> ${data.date}</span>
+                    <span><i class="fas fa-eye"></i> 조회 ${data.views}</span>
+                `;
+            }
+            
+            if (contentEl) contentEl.textContent = data.content;
+            
+            if (fileEl) {
+                if (data.hasFile) {
+                    fileEl.innerHTML = `
+                        <a href="#" class="file-link" onclick="downloadFile('${data.fileName}'); return false;">
+                            <i class="fas fa-paperclip"></i> ${data.fileName}
+                        </a>
+                    `;
+                } else {
+                    fileEl.innerHTML = '';
+                }
+            }
+
+            openModal('notice-detail-modal');
+        }
+
+        // Q&A detail modal
+        function openQnaDetail(qnaId) {
+            console.log('openQnaDetail called with ID:', qnaId);
+            const data = qnaData[qnaId];
+            if (!data) {
+                console.error('No data found for QnA ID:', qnaId);
+                return;
+            }
+
+            currentQnaId = qnaId;
+
+            const titleEl = document.getElementById('qna-detail-title');
+            const infoEl = document.getElementById('qna-detail-info');
+            const statusEl = document.getElementById('qna-detail-status');
+
+            if (titleEl) titleEl.textContent = data.title;
+            
+            if (infoEl) {
+                infoEl.innerHTML = `
+                    <span><i class="fas fa-user"></i> ${data.author}</span>
+                    <span><i class="fas fa-calendar"></i> 접수: ${data.receiveDate}</span>
+                    ${data.completeDate ? `<span><i class="fas fa-check"></i> 완료: ${data.completeDate}</span>` : ''}
+                `;
+            }
+            
+            if (statusEl) {
+                statusEl.className = 'status ' + (data.status === 'answered' ? 'answered' : 'pending');
+                statusEl.textContent = data.status === 'answered' ? '답변완료' : '답변대기';
+            }
+
+            const questionEl = document.getElementById('qna-detail-question');
+            if (questionEl) questionEl.textContent = data.question;
+
+            const fileEl = document.getElementById('qna-detail-file');
+            if (fileEl) {
+                if (data.hasFile) {
+                    fileEl.innerHTML = `
+                        <a href="#" class="file-link" onclick="downloadFile('${data.fileName}'); return false;">
+                            <i class="fas fa-paperclip"></i> ${data.fileName}
+                        </a>
+                    `;
+                } else {
+                    fileEl.innerHTML = '';
+                }
+            }
+
+            const answerSection = document.getElementById('qna-answer-section');
+            const answerInputSection = document.getElementById('qna-answer-input');
+            const answerBtn = document.getElementById('answer-btn');
+            
+            if (data.status === 'answered') {
+                if (answerSection) answerSection.style.display = 'block';
+                
+                const answerEl = document.getElementById('qna-detail-answer');
+                if (answerEl) answerEl.textContent = data.answer;
+                
+                const answerDateEl = document.getElementById('qna-answer-date');
+                if (answerDateEl) answerDateEl.innerHTML = `<i class="fas fa-clock"></i> 답변일: ${data.completeDate}`;
+                
+                if (answerBtn) answerBtn.style.display = 'none';
+                if (answerInputSection) answerInputSection.style.display = 'none';
+            } else {
+                if (answerSection) answerSection.style.display = 'none';
+                if (answerBtn) answerBtn.style.display = 'inline-flex';
+                if (answerInputSection) answerInputSection.style.display = 'none';
+            }
+
+            openModal('qna-detail-modal');
+        }
+
+        // Show answer input
+        function showAnswerInput() {
+            document.getElementById('qna-answer-input').style.display = 'block';
+            document.getElementById('answer-btn').style.display = 'none';
+            document.getElementById('inline-answer-content').focus();
+        }
+
+        // Cancel answer
+        function cancelAnswer() {
+            document.getElementById('qna-answer-input').style.display = 'none';
+            document.getElementById('answer-btn').style.display = 'inline-flex';
+            document.getElementById('inline-answer-content').value = '';
+        }
+
+        // Notice write button
+        document.getElementById('notice-write-btn').addEventListener('click', () => {
+            openModal('notice-modal');
+        });
+
+        // Q&A write button
+        document.getElementById('qna-write-btn').addEventListener('click', () => {
+            openModal('qna-modal');
+        });
+
+        // File upload display
+        document.getElementById('notice-file').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('notice-file-name').textContent = fileName;
+        });
+
+        document.getElementById('qna-file').addEventListener('change', (e) => {
+            const fileName = e.target.files[0]?.name || '';
+            document.getElementById('qna-file-name').textContent = fileName;
+        });
+
+        // Form submissions
+        document.getElementById('notice-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('공지사항이 등록되었습니다.');
+            closeModal('notice-modal');
+            e.target.reset();
+            document.getElementById('notice-file-name').textContent = '';
+        });
+
+        document.getElementById('qna-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('질문이 등록되었습니다.');
+            closeModal('qna-modal');
+            e.target.reset();
+            document.getElementById('qna-file-name').textContent = '';
+        });
+
+        // Inline answer form submission
+        document.getElementById('inline-answer-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const answerContent = document.getElementById('inline-answer-content').value;
+            
+            // Update data (in real implementation, this would be an API call)
+            if (currentQnaId && qnaData[currentQnaId]) {
+                qnaData[currentQnaId].status = 'answered';
+                qnaData[currentQnaId].answer = answerContent;
+                qnaData[currentQnaId].completeDate = new Date().toISOString().split('T')[0];
+                
+                alert('답변이 등록되었습니다.');
+                closeModal('qna-detail-modal');
+                document.getElementById('inline-answer-content').value = '';
+                
+                // Refresh the view if on Q&A page
+                if (!qnaSection.classList.contains('hidden')) {
+                    // In a real app, you would reload the list from server
+                    location.reload();
+                }
+            }
+        });
+
+        // Theme toggle functionality
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.getAttribute('data-theme');
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                
+                document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector(`.theme-option[data-theme="${savedTheme}"]`)?.classList.add('active');
+
+        // File download function
+        function downloadFile(fileName) {
+            alert(`"${fileName}" 파일을 다운로드합니다.`);
+            // 실제 구현 시 파일 다운로드 로직 추가
+        }
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+        
+        // Responsive sidebar behavior
+        function handleResize() {
+            if (window.innerWidth <= 768) {
+                // Mobile mode
+                sidebar.classList.remove('collapsed');
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('show');
+                mainContent.classList.remove('expanded');
+            } else {
+                // Desktop mode
+                sidebar.classList.remove('mobile-open');
+                sidebarOverlay.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial check
+
+        // Make functions globally accessible for onclick handlers
+        window.openQnaDetail = openQnaDetail;
+        window.openNoticeDetail = openNoticeDetail;
+        window.closeModal = closeModal;
+        window.downloadFile = downloadFile;
+        window.showAnswerInput = showAnswerInput;
+        window.cancelAnswer = cancelAnswer;
+
+        console.log('All functions registered globally');
+        console.log('QnA Data:', qnaData);
+    </script>
+</body>
+</html>

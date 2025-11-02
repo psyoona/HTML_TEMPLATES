@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --primary-color: #bb86fc;
+            --primary-variant-color: #3700b3;
+            --secondary-color: #03dac6;
+            --on-surface-color: #ffffff;
+            --on-surface-variant-color: #b0b0b0;
+            --shape-opacity: 0.1;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --primary-color: #5f3dc4;
+            --primary-variant-color: #4c2db8;
+            --secondary-color: #12b886;
+            --on-surface-color: #212529;
+            --on-surface-variant-color: #868e96;
+            --shape-opacity: 0.03;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--on-surface-color);
+            overflow: hidden;
+        }
+
+        .background-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-variant-color));
+            opacity: var(--shape-opacity);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 400px;
+            height: 400px;
+            top: -10%;
+            left: -10%;
+        }
+
+        .shape2 {
+            width: 300px;
+            height: 300px;
+            bottom: -15%;
+            right: -5%;
+            animation-delay: 5s;
+            animation-duration: 25s;
+        }
+        
+        .shape3 {
+            width: 200px;
+            height: 200px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 10s;
+            animation-duration: 30s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) translateX(30px) rotate(90deg); }
+            50% { transform: translateY(20px) translateX(-30px) rotate(180deg); }
+            75% { transform: translateY(-20px) translateX(30px) rotate(270deg); }
+            100% { transform: translateY(0px) translateX(0px) rotate(360deg); }
+        }
+
+        .login-card {
+            background-color: var(--surface-color);
+            padding: 50px 60px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            z-index: 1;
+            border: 1px solid var(--primary-color);
+            border-width: 2px;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .card-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--on-surface-color);
+        }
+
+        .card-header p {
+            color: var(--on-surface-variant-color);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--on-surface-variant-color);
+            transition: color 0.3s;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--primary-color);
+            border-width: 2px;
+            border-radius: 10px;
+            color: var(--on-surface-color);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-input::placeholder {
+            color: var(--on-surface-variant-color);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.2);
+        }
+
+        .form-input:focus + i {
+            color: var(--primary-color);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s, background-color 0.3s;
+            margin-top: 15px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            background-color: var(--primary-variant-color);
+            box-shadow: 0 8px 25px rgba(95, 61, 196, 0.3);
+        }
+
+        [data-theme="dark"] .login-btn:hover {
+            box-shadow: 0 8px 25px rgba(187, 134, 252, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .theme-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--on-surface-variant-color);
+        }
+
+        .theme-option.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        [data-theme="light"] .theme-option.active {
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 40px 30px;
+                margin: 0 20px;
+                width: calc(100% - 40px);
+            }
+            .card-header h1 {
+                font-size: 1.8rem;
+            }
+            .background-shapes .shape {
+                opacity: calc(var(--shape-opacity) * 0.7);
+            }
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 15px;
+            }
+            .login-card {
+                padding: 30px 20px;
+                margin: 0;
+                width: 100%;
+            }
+            .card-header h1 {
+                font-size: 1.5rem;
+            }
+            .form-input {
+                padding: 12px 15px 12px 45px;
+                font-size: 0.95rem;
+            }
+            .input-wrapper i {
+                left: 14px;
+                font-size: 1.1rem;
+            }
+            .login-btn {
+                padding: 12px;
+                font-size: 1rem;
+            }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 3px;
+                gap: 3px;
+            }
+            .theme-option {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            .theme-option span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-shapes">
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </div>
+
+    <div class="login-card">
+        <div class="theme-toggle">
+            <div class="theme-option active" data-theme="dark">
+                <i class="fas fa-moon"></i>
+                <span>Dark</span>
+            </div>
+            <div class="theme-option" data-theme="light">
+                <i class="fas fa-sun"></i>
+                <span>Light</span>
+            </div>
+        </div>
+        <div class="card-header">
+            <h1>로그인</h1>
+            <p>서비스를 이용하려면 로그인하세요.</p>
+        </div>
+        <form>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="text" id="username" class="form-input" placeholder="아이디" required>
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" id="password" class="form-input" placeholder="비밀번호" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+            </div>
+            <button type="submit" class="login-btn">로그인</button>
+        </form>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const theme = option.getAttribute('data-theme');
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                
+                document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.querySelector(`.theme-option[data-theme="${savedTheme}"]`)?.classList.add('active');
+    </script>
+</body>
+</html>
