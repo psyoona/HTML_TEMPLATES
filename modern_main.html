@@ -442,7 +442,9 @@
             border-radius: 15px;
             padding: 30px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
             border: 1px solid var(--border-color);
             animation: slideUp 0.3s;
         }
@@ -470,6 +472,8 @@
             padding: 20px;
             background-color: var(--surface-color-2);
             border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .detail-info {
@@ -1188,7 +1192,7 @@
             </div>
             <div class="answer-section" id="qna-answer-section" style="display: none;">
                 <h4><i class="fas fa-comment-dots"></i> 관리자 답변</h4>
-                <div id="qna-detail-answer">답변 내용이 표시됩니다.</div>
+                <div class="detail-content" id="qna-detail-answer">답변 내용이 표시됩니다.</div>
                 <div style="margin-top: 10px; font-size: 0.85rem; color: var(--on-surface-variant-color);" id="qna-answer-date"></div>
             </div>
             
@@ -1291,28 +1295,32 @@
             1: {
                 title: '비밀번호 변경은 어떻게 하나요?',
                 author: '김민준',
-                receiveDate: '2025-11-01',
-                completeDate: '2025-11-01',
+                email: 'minjun.kim@example.com',
+                receiveDate: '2025-11-01 14:30',
+                completeDate: '2025-11-01 16:45',
+                emailSentDate: '2025-11-01 16:46',
                 status: 'answered',
-                question: '비밀번호를 변경하고 싶은데 어디서 할 수 있나요? 마이페이지를 찾을 수가 없어서 문의드립니다.',
-                answer: '안녕하세요, 관리자입니다.\n\n비밀번호는 우측 상단 프로필 클릭 > [마이페이지] > [개인정보 수정] 메뉴에서 변경하실 수 있습니다.\n\n감사합니다.',
+                question: '비밀번호를 변경하고 싶은데 어디서 할 수 있나요?\n마이페이지를 찾을 수가 없어서 문의드립니다.\n\n빠른 답변 부탁드립니다.',
+                answer: '안녕하세요, 관리자입니다.\n\n비밀번호는 우측 상단 프로필 클릭 > [마이페이지] > [개인정보 수정] 메뉴에서 변경하실 수 있습니다.\n\n추가로 궁금하신 사항이 있으시면 언제든지 문의해 주세요.\n\n감사합니다.',
                 hasFile: true,
                 fileName: '비밀번호_변경_가이드.pdf'
             },
             2: {
                 title: '첨부파일 용량 제한이 있나요?',
                 author: '이서연',
-                receiveDate: '2025-11-02',
+                email: 'seoyeon.lee@example.com',
+                receiveDate: '2025-11-02 09:15',
                 status: 'pending',
-                question: '문서를 업로드하려고 하는데 파일 용량 제한이 있는지 궁금합니다. 최대 몇 MB까지 가능한가요?',
+                question: '문서를 업로드하려고 하는데 파일 용량 제한이 있는지 궁금합니다.\n최대 몇 MB까지 가능한가요?\n\n큰 파일을 업로드해야 해서 미리 확인하고 싶습니다.',
                 hasFile: false
             },
             3: {
                 title: '회원 탈퇴는 어디서 하나요?',
                 author: '박지훈',
-                receiveDate: '2025-11-02',
+                email: 'jihun.park@example.com',
+                receiveDate: '2025-11-02 11:20',
                 status: 'pending',
-                question: '더 이상 서비스를 이용하지 않으려고 하는데 회원 탈퇴 메뉴를 찾을 수가 없습니다.',
+                question: '더 이상 서비스를 이용하지 않으려고 하는데 회원 탈퇴 메뉴를 찾을 수가 없습니다.\n\n어디서 탈퇴 신청을 할 수 있나요?',
                 hasFile: false
             }
         };
@@ -1441,9 +1449,13 @@
             
             if (infoEl) {
                 infoEl.innerHTML = `
-                    <span><i class="fas fa-user"></i> ${data.author}</span>
-                    <span><i class="fas fa-calendar"></i> 접수: ${data.receiveDate}</span>
-                    ${data.completeDate ? `<span><i class="fas fa-check"></i> 완료: ${data.completeDate}</span>` : ''}
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <span><i class="fas fa-user"></i> ${data.author}</span>
+                        <span><i class="fas fa-envelope"></i> ${data.email}</span>
+                        <span><i class="fas fa-calendar"></i> 등록일: ${data.receiveDate}</span>
+                        ${data.completeDate ? `<span><i class="fas fa-check-circle"></i> 처리완료일: ${data.completeDate}</span>` : ''}
+                        ${data.emailSentDate ? `<span><i class="fas fa-paper-plane"></i> 이메일 발송일: ${data.emailSentDate}</span>` : ''}
+                    </div>
                 `;
             }
             
@@ -1479,7 +1491,12 @@
                 if (answerEl) answerEl.textContent = data.answer;
                 
                 const answerDateEl = document.getElementById('qna-answer-date');
-                if (answerDateEl) answerDateEl.innerHTML = `<i class="fas fa-clock"></i> 답변일: ${data.completeDate}`;
+                if (answerDateEl) {
+                    answerDateEl.innerHTML = `
+                        <i class="fas fa-clock"></i> 답변일: ${data.completeDate}
+                        ${data.emailSentDate ? ` | <i class="fas fa-paper-plane"></i> 이메일 발송: ${data.emailSentDate}` : ''}
+                    `;
+                }
                 
                 if (answerBtn) answerBtn.style.display = 'none';
                 if (answerInputSection) answerInputSection.style.display = 'none';
@@ -1579,9 +1596,13 @@
             });
         });
 
-        // Load saved theme
+        // Load saved theme and set initial state
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Remove all active classes first
+        document.querySelectorAll('.theme-option').forEach(opt => opt.classList.remove('active'));
+        // Then add active class to saved theme
         document.querySelector(`.theme-option[data-theme="${savedTheme}"]`)?.classList.add('active');
 
         // File download function
